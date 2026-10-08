@@ -16,3 +16,5 @@ The Python 0.1 prototype's sessions are not compatible with the Rust 0.2 format.
 6. The release workflow creates a **draft** GitHub release containing archives and checksums. Review it before publishing.
 
 `python3 scripts/package.py --binary /path/to/shardrop --target aarch64-apple-darwin --output dist` packages a native executable and generates completions/manual pages by executing it. When cross-compiling, pass `--generator` with a host-native build of the same version. Python is a maintainer packaging dependency; end users do not need it.
+
+Windows release builds use `-C target-feature=+crt-static` with an explicit MSVC target, so prebuilt users do not need a separate Visual C++ runtime installation. The `Rebuild portable Windows draft` workflow can rebuild an existing unpublished draft tag with those flags. It refuses to replace assets on published releases. The source tag remains unchanged.

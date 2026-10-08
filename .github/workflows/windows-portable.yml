@@ -1,0 +1,44 @@
+name: Rebuild portable Windows draft
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing draft release tag
+        required: true
+        default: v0.2.0
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      RUSTFLAGS: -C target-feature=+crt-static
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - name: Require an unpublished draft
+        shell: pwsh
+        run: |
+          $draft = gh release view $env:RELEASE_TAG --json isDraft --jq '.isDraft'
+          if ($LASTEXITCODE -ne 0 -or $draft -ne 'true') { throw 'Only draft releases may be rebuilt.' }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: Swatinem/rust-cache@v2
+      - name: Validate version
+        shell: bash
+        run: python -c 'import os,tomllib; assert os.environ["RELEASE_TAG"] == "v"+tomllib.load(open("Cargo.toml","rb"))["package"]["version"]'
+      - run: cargo test --locked --target x86_64-pc-windows-msvc
+      - run: cargo build --release --locked --target x86_64-pc-windows-msvc
+      - run: python scripts/package.py --binary target/x86_64-pc-windows-msvc/release/shardrop.exe --target x86_64-pc-windows-msvc
+      - name: Replace draft Windows assets
+        shell: bash
+        run: gh release upload "$RELEASE_TAG" dist/* --clobber

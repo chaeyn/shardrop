@@ -38,8 +38,18 @@ jobs:
       - name: Validate version tag
         shell: bash
         run: python -c 'import os,tomllib; v=tomllib.load(open("Cargo.toml","rb"))["package"]["version"]; assert os.environ["GITHUB_REF_NAME"] == "v"+v'
-      - run: cargo test --locked
-      - run: cargo build --release --locked
+      - if: runner.os != 'Windows'
+        run: cargo test --locked
+      - if: runner.os != 'Windows'
+        run: cargo build --release --locked
+      - if: runner.os == 'Windows'
+        run: cargo test --locked --target x86_64-pc-windows-msvc
+        env:
+          RUSTFLAGS: -C target-feature=+crt-static
+      - if: runner.os == 'Windows'
+        run: cargo build --release --locked --target x86_64-pc-windows-msvc
+        env:
+          RUSTFLAGS: -C target-feature=+crt-static
       - if: matrix.cross
         run: pip install ziglang==0.17.0
       - if: matrix.cross
@@ -52,8 +62,10 @@ jobs:
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
           binary="target/release/shardrop${suffix}"
-          if [[ "${{ matrix.cross }}" == "true" ]]; then binary="target/${{ matrix.target }}/release/shardrop${suffix}"; fi
-          python scripts/package.py --binary "$binary" --generator "target/release/shardrop${suffix}" --target "${{ matrix.target }}"
+          generator="target/release/shardrop${suffix}"
+          if [[ "${{ matrix.cross }}" == "true" || "$RUNNER_OS" == "Windows" ]]; then binary="target/${{ matrix.target }}/release/shardrop${suffix}"; fi
+          if [[ "$RUNNER_OS" == "Windows" ]]; then generator="$binary"; fi
+          python scripts/package.py --binary "$binary" --generator "$generator" --target "${{ matrix.target }}"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}
