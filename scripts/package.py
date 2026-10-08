@@ -32,8 +32,9 @@ with tempfile.TemporaryDirectory() as temporary:
     for file in ['LICENSE', 'README.md', 'README.ko.md', 'CHANGELOG.md', 'SECURITY.md']:
         shutil.copy2(root / file, staging / file)
     shutil.copytree(root / 'docs', staging / 'docs')
-    shutil.copy2(root / 'scripts/install-local.sh', staging / 'install-local.sh')
-    shutil.copy2(root / 'scripts/install-local.ps1', staging / 'install-local.ps1')
+    (staging / 'scripts').mkdir()
+    shutil.copy2(root / 'scripts/install-local.sh', staging / 'scripts/install-local.sh')
+    shutil.copy2(root / 'scripts/install-local.ps1', staging / 'scripts/install-local.ps1')
     (staging / 'completions').mkdir()
     for shell in ['bash', 'zsh', 'fish', 'powershell', 'elvish']:
         data = subprocess.check_output([str(generator), 'completions', shell])

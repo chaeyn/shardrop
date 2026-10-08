@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2026-10-09, pre-release)
 
 - Native Rust client and source worker with no Python or external tar dependency.
 - Parallel gzip compression and parallel chunk downloads.
