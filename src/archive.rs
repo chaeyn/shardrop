@@ -12,7 +12,7 @@ use std::{
         Arc, Mutex,
     },
 };
-use tar::{Archive, Builder, EntryType, Header};
+use tar::{Archive, Builder, Header};
 use walkdir::WalkDir;
 
 #[derive(Default)]
@@ -182,7 +182,7 @@ pub fn produce(dir: &Path, options: &Options, shared: Shared, stop: Arc<AtomicBo
                         if let Some(first) = hardlinks.get(&key) {
                             let mut header = Header::new_gnu();
                             header.set_metadata(&before);
-                            header.set_entry_type(EntryType::Link);
+                            header.set_entry_type(tar::EntryType::Link);
                             header.set_size(0);
                             tar.append_link(&mut header, &name, first)?;
                             continue;
