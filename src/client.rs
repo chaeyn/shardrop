@@ -36,10 +36,12 @@ pub fn create(
         }
     }
     store::private_dir(&dir.join("chunks"))?;
+    eprintln!("Preparing source archive.");
     let descriptor = match &remote {
         Some(remote) => ssh::start(remote, &options)?,
         None => server::start(options.clone())?,
     };
+    eprintln!("Source ready; connecting to data service.");
     let session = Session {
         protocol: PROTOCOL,
         remote,

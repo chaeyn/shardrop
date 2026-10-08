@@ -4,6 +4,7 @@ permissions:
   contents: read
 jobs:
   test:
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +19,18 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets -- -D warnings
       - run: cargo test --locked
+      - name: Windows failure diagnostics
+        if: failure() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_Process | Where-Object { $_.Name -like 'shardrop*' } | Select-Object ProcessId,ParentProcessId,CommandLine | Format-List
+          Get-ChildItem "$env:TEMP/shardrop-*" -Directory | ForEach-Object {
+            Write-Output $_.FullName
+            foreach ($name in @('status.json','server.log')) {
+              $path = Join-Path $_.FullName $name
+              if (Test-Path $path) { Get-Content $path -Tail 30 }
+            }
+          }
       - run: cargo build --locked --release
       - run: cargo package --locked --allow-dirty
   minimum-rust:

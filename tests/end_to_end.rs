@@ -8,7 +8,9 @@ use std::{
 };
 
 fn cli() -> Command {
-    Command::new(assert_cmd::cargo::cargo_bin!("shardrop"))
+    let mut command = Command::new(assert_cmd::cargo::cargo_bin!("shardrop"));
+    command.timeout(Duration::from_secs(45));
+    command
 }
 fn fixture(root: &Path) -> PathBuf {
     let source = root.join("source");
