@@ -1,10 +1,12 @@
 # Validation record
 
-Checked on 2026-10-09. This record describes executed checks; it does not claim a published release or a public CI run.
+Checked on 2026-10-09. Local checks below are supplemented by [public GitHub Actions](https://github.com/chaeyn/shardrop/actions/workflows/ci.yml). Check the run for the commit you use.
 
 ## Executed
 
-- macOS ARM64: native Rust build and 10 integration tests passed.
+- macOS ARM64: native Rust build and 10 integration tests passed, including after the Shardrop rename and TLS server update.
+- GitHub Windows x86-64: 7 integration tests passed after fixing standard-handle inheritance in detached source workers. Unix-only metadata/process tests are excluded on Windows.
+- GitHub Linux: 10 integration tests passed. The Rust 1.88 minimum-version check passed.
 - Static checks: `cargo fmt --check` and `cargo clippy --locked --all-targets -- -D warnings`. `cargo package --locked --allow-dirty` built and verified the source package. The local Unix install script and installed `doctor` command passed.
 - Linux x86-64: musl cross-build from macOS, followed by execution on a Linux server. The final release build also passed source-worker restart, chunk repair, restore and cleanup on Linux.
 - Actual Linux → macOS transfer over OpenSSH: 10 MiB + 123 bytes of random file data, Unicode filename, empty directory, symlink and hardlink. The archive had **11 chunks, 10,488,289 compressed bytes, 10,490,880 raw tar bytes**, with zero warnings.
@@ -29,11 +31,11 @@ Checked on 2026-10-09. This record describes executed checks; it does not claim 
 
 ## Not yet verified
 
-- Windows runtime, remote Windows OpenSSH startup/detachment, ACL inheritance and symlink privileges.
+- Remote Windows OpenSSH startup/detachment, ACL inheritance and symlink privileges outside the CI environment.
 - Linux ARM64 and Intel macOS runtime.
 - Full 24-hour lifetime expiry or prolonged Wi-Fi roaming.
 - Public-network denial-of-service resistance, large concurrent-client stress or third-party security audit.
 - Snapshot consistency for changing databases; the tool does not provide snapshots.
-- Public GitHub CI, a published GitHub release or crates.io installation.
+- crates.io installation; distribution uses GitHub release archives and source builds.
 
-The release workflow targets these additional operating systems, but its presence is not proof they have run successfully. Check their CI and host tests before expanding the verified support claim.
+The release workflow builds additional targets. A successful cross-build alone does not establish runtime support.

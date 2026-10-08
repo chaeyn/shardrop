@@ -8,5 +8,6 @@
 - Resumable chunk journals, SHA-256 validation, gzip CRC verification and safe extraction.
 - Local pack, offline verification, explicit cleanup, JSON receipts, completions and man page.
 - Cross-platform CI and draft-release packaging.
+- Windows worker handle-inheritance fix and a current Rustls server stack without the legacy ring dependency.
 
 The saved session/archive protocol replaces the Python 0.1 prototype and is not compatible with its session files.

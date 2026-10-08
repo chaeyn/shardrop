@@ -3,7 +3,7 @@
 | Area | Behavior |
 |---|---|
 | Linux / macOS clients and sources | Native Rust implementation; see validation for measured environments |
-| Windows client / source | Implementation and CI target; remote source needs an OpenSSH server and `--remote-shell powershell` |
+| Windows client / source | Local pack/repair/restore tested in Windows CI; remote source needs an OpenSSH server and `--remote-shell powershell` and remains unverified |
 | CPU targets in release workflow | Linux x86-64/ARM64 musl, macOS x86-64/ARM64, Windows x86-64 MSVC |
 | External runtime | OpenSSH client for remote operations; no external dependency for local pack/verify/restore |
 | File data, empty directories | Preserved |
