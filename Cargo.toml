@@ -1,0 +1,52 @@
+[package]
+name = "shardrop"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.88"
+description = "Resumable, compressed, parallel backups over SSH or authenticated LAN HTTPS"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/chaeyn/shardrop"
+homepage = "https://github.com/chaeyn/shardrop"
+keywords = ["backup", "transfer", "ssh", "compression", "cli"]
+categories = ["command-line-utilities", "network-programming"]
+include = ["src/**", "Cargo.toml", "Cargo.lock", "README.md", "README.ko.md", "LICENSE", "SECURITY.md", "CHANGELOG.md", "CONTRIBUTING.md", "docs/**", "tests/**", "scripts/**"]
+
+[dependencies]
+anyhow = "1.0"
+base64 = "0.22"
+clap = { version = "4.5", features = ["derive"] }
+clap_complete = "4.5"
+clap_mangen = "0.2"
+ctrlc = "3.4"
+flate2 = "1.1"
+fs2 = "0.4"
+globset = "0.4"
+hex = "0.4"
+rand = "0.8"
+rcgen = "0.13"
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+subtle = "2.6"
+tar = "0.4"
+tempfile = "3.20"
+tiny_http = { version = "0.12", default-features = false, features = ["ssl-rustls"] }
+ureq = { version = "2.12", default-features = false, features = ["tls", "json"] }
+walkdir = "2.5"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[profile.dev]
+debug = 0
+
+[profile.test]
+debug = 0

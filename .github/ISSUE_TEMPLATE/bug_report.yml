@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible transfer, archive or installation problem
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Source and destination environment
+      description: Include OS, CPU architecture and the version on both machines.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and expected behavior
+      description: Use a minimal fixture. Redact private hostnames and file paths.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Never attach session.json, job.json, private keys or bearer tokens.
