@@ -103,6 +103,29 @@ pub fn launch(dir: &Path) -> Result<Descriptor> {
         #[cfg(windows)]
         {
             use std::os::windows::process::CommandExt;
+            // Rust's Windows process launcher inherits existing inheritable handles.
+            // Do not let this long-lived worker retain the caller's capture pipes.
+            // The explicit log/null Stdio handles are duplicated by Command below.
+            use windows_sys::Win32::{
+                Foundation::{SetHandleInformation, HANDLE_FLAG_INHERIT, INVALID_HANDLE_VALUE},
+                System::Console::{
+                    GetStdHandle, STD_ERROR_HANDLE, STD_INPUT_HANDLE, STD_OUTPUT_HANDLE,
+                },
+            };
+            for stream in [STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE] {
+                // SAFETY: GetStdHandle returns borrowed process handles. We only
+                // clear an inheritance flag; we neither close nor take ownership.
+                unsafe {
+                    let handle = GetStdHandle(stream);
+                    if !handle.is_null() && handle != INVALID_HANDLE_VALUE {
+                        ensure!(
+                            SetHandleInformation(handle, HANDLE_FLAG_INHERIT, 0) != 0,
+                            "cannot disable standard-handle inheritance: {}",
+                            std::io::Error::last_os_error()
+                        );
+                    }
+                }
+            }
             command.creation_flags(0x08000000 | 0x00000200);
         }
         command.spawn()?;
